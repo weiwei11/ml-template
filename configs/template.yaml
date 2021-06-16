@@ -1,0 +1,102 @@
+# template config
+
+exp:  # experiment
+  project: 'template'
+  name: 'template'
+  notes: 'only for template'
+  job_type: 'debug'
+  tags: ['demo', '${exp.task}']
+  group: 'template'
+  task: 'demo'
+  model: 'first'
+  # other
+  code_version: '${cur_version:}'
+  datetime: '${datetime_now: %Y-%m-%d\ %H:%M:%S}'
+  fullname: '${condition: ${options.debug}, \[${exp.name}\]\[${exp.model}\]\[debug\], \[${exp.name}\]\[${exp.model}\]\[${exp.datetime}\]}'
+  model_dir: 'data/model/${exp.task}/${exp.model}'
+  record_dir: 'data/record/${exp.task}/${exp.fullname}'
+#  result_dir: 'data/result/${exp.task}/${exp.fullname}'
+
+options:
+  use_wandb: false
+  debug: true
+  gpus: [0, 1, 2, 3]
+  print_runtime: false
+
+network:
+  name: 'cifar10'
+
+evaluator:
+  name: 'default'
+  result_dir: '${exp.record_dir}'
+
+visualizer:
+  name: 'default'
+  result_dir: '${exp.record_dir}'
+
+train:
+  resume: true  # if load the trained network
+  trainer:
+    name: 'default'
+    model_dir: '${exp.model_dir}'
+    begin_epoch: -1  # means current max epoch of saved in dir
+    max_epoch: 140
+    save_ep: 5
+    eval_ep: 5
+    resume: ${train.resume}
+  network_wrapper:
+    name: 'cifar10'
+  dataset:
+    name: 'cifar10'
+    data_root: 'data'
+    split: 'train'
+  transform:
+    name: 'simple'
+    mean: [0.5, 0.5, 0.5]
+    std: [0.5, 0.5, 0.5]
+  dataloader:
+    name: 'default'
+    shuffle: true
+    batch_size: 4
+    drop_last: false
+    num_workers: 16
+    collator: 'default'
+    batch_sampler:
+      name: 'default'
+  recorder:
+    name: 'default'
+    record_dir: '${exp.record_dir}'
+    resume: ${train.resume}
+    use_wandb: ${options.use_wandb}
+  optimizer:
+    name: 'adam'
+    lr: 1e-4
+    weight_decay: 5e-4
+  scheduler:
+    name: 'multi_step'  # choices 'warmup' or 'multi_step'
+    milestones: [80, 120]
+    gamma: 0.5
+
+# test
+test:
+  epoch: -1
+  transform:
+    name: 'simple'
+    mean: [0.5, 0.5, 0.5]
+    std: [0.5, 0.5, 0.5]
+  dataset:
+    name: 'cifar10'
+    data_root: 'data'
+    split: 'test'
+  dataloader:
+    name: 'default'
+    shuffle: false
+    batch_size: 1
+    drop_last: false
+    num_workers: 0
+    collator: 'default'
+    batch_sampler:
+      name: 'default'
+
+hparams:  # hyper parameters
+  model: ${exp.model}

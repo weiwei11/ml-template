@@ -1,0 +1,63 @@
+# cifar10 demo
+
+# template config
+
+exp:  # experiment
+  project: 'cifar10'
+  name: 'cifar10'
+  notes: 'train a model on cifar10 dataset'
+  job_type: 'test'
+  tags: ['${exp.task}']
+  group: 'cifar10'
+  # other
+  task: 'cifar10'
+  model: 'cifar10'
+
+options:
+  gpus: [0, 1]
+  use_wandb: true
+  debug: false
+
+network:
+  name: 'cifar10'
+
+evaluator:
+  name: 'cifar10'
+
+visualizer:
+  name: 'cifar10'
+
+train:
+  network_wrapper:
+    name: 'cifar10'
+  dataset:
+    name: 'cifar10'
+    data_root: 'data'
+    split: 'train'
+  transform:
+    name: 'simple'
+    mean: [0.5, 0.5, 0.5]
+    std: [0.5, 0.5, 0.5]
+  dataloader:
+    name: 'default'
+    batch_size: 256
+    num_workers: 32
+  optimizer:
+    name: 'sgd'
+    lr: 1e-3
+    weight_decay: 5e-4
+  scheduler:
+    name: 'multi_step'  # choices 'warmup' or 'multi_step'
+    milestones: [80, 120]
+    gamma: 0.5
+
+# test
+test:
+  transform:
+    name: 'simple'
+    mean: [0.5, 0.5, 0.5]
+    std: [0.5, 0.5, 0.5]
+  dataset:
+    name: 'cifar10'
+    data_root: 'data'
+    split: 'test'
