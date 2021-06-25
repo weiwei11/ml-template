@@ -12,14 +12,14 @@ exp:  # experiment
   # other
   code_version: '${cur_version:}'
   datetime: '${datetime_now: %Y-%m-%d\ %H:%M:%S}'
-  fullname: '${condition: ${options.debug}, \[${exp.name}\]\[${exp.model}\]\[debug\], \[${exp.name}\]\[${exp.model}\]\[${exp.datetime}\]}'
+  fullname: '${condition: ${options.debug}, \{${exp.name}\}\{${exp.model}\}\{debug\}, \{${exp.name}\}\{${exp.model}\}\{${exp.datetime}\}}'
   model_dir: 'data/model/${exp.task}/${exp.model}'
   record_dir: 'data/record/${exp.task}/${exp.fullname}'
 #  result_dir: 'data/result/${exp.task}/${exp.fullname}'
 
 options:
   use_wandb: false
-  debug: true
+  debug: ${is_debug:}
   gpus: [0, 1, 2, 3]
   print_runtime: false
 
